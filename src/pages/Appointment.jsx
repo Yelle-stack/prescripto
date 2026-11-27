@@ -7,6 +7,7 @@ const Appointment = () => {
 
   const { docId } = useParams()
   const { doctors, currencySymbol } = useContext(AppContext)
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
   const [docInfo, setDocInfo] = useState(null)
   const [docSlots,setDocSlots] = useState([])
@@ -31,7 +32,7 @@ const Appointment = () => {
 
    // setting end time of the date with index
     let endTime = new Date()
-    endTime.setDate(today.getDate()+1)
+    endTime.setDate(today.getDate() + i)
     endTime.setHours(21,0,0,0)
 
     // setting hours
@@ -55,7 +56,10 @@ const Appointment = () => {
       })
 
       // Increment current time by 30 minutes
+      currentDate.setMinutes(currentDate.getMinutes() + 30)
      }
+
+     setDocSlots(prev => ([...prev, timeSlots]))
    }
   }
 
@@ -66,6 +70,10 @@ const Appointment = () => {
   useEffect(()=>{
      getAvailableSlots()
   },[docInfo])
+
+  useEffect(()=>{
+console.log(docSlots);
+  },[docSlots])
 
   return docInfo && (
     <div>
@@ -96,6 +104,21 @@ const Appointment = () => {
           <p className='text-gray-500 font-medium mt-4'>
             Appointment fee: <span className='text-gray-600'>{currencySymbol}{docInfo.fees}</span>
           </p>
+        </div>
+      </div>
+
+      {/* ------ Booking slots ------ */}
+      <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>
+        <p>Booking slots</p>
+        <div>
+          {
+            docSlots.length && docSlots.map((item,index)=>(
+              <div key={index}>
+                <p>{item[0] && daysOfWeek[item[0].datetime.getDay()]}</p>
+                <p>{item[0] && item[0].datetime.getDate()}</p>
+              </div>
+            ))
+          }
         </div>
       </div>
 
